@@ -1,0 +1,15 @@
+[
+  {
+    "file": "game:itemtypes/food/grain",
+    "op": "add",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "BehaviorPileItem",
+        "properties": {
+          "pileBlockCode": "gespiles:grainPile-{type}"
+        }
+      }
+    ]
+  }
+]

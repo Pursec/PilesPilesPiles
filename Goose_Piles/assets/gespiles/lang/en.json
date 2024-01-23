@@ -1,0 +1,22 @@
+{
+    "blockhelp-rotpile-removeRot" : "Take Rot",
+    "blockhelp-rotpile-addRot" : "Add Rot",
+    "blockhelp-saltpile-removesalt" : "Take Salt",
+    "blockhelp-saltpile-addsalt": "Add Salt",
+    "blockhelp-genericpile-addItem": "Add Item",
+    "blockhelp-genericpile-removeItem": "Remove Item",
+    "item-roughslug-*": "Rough Cast Metal Slug",
+    "block-slugmold-raw": "Raw cast slug mold",
+    "block-slugmold-burned": "Cast slug mold",
+    "blockhelp-chimney-lightunlight": "Light/Unlight",
+    "item-stuffedfish-bass": "Grass Stuffed Small Bass",
+    "item-stuffedfish-trout": "Grass Stuffed Trout",
+    "item-stuffedfish-perch": "Grass Stuffed Perch",
+    "item-stuffedfish-salmon": "Grass Stuffed Salmon",
+    "item-stuffedfish-carp": "Grass Stuffed Carp",
+    "item-stuffedfish-pike": "Grass Stuffed Pike",
+    "item-stuffedfish-arcticchar": "Grass Stuffed Arctic Char",
+    "item-stuffedfish-catfish": "Grass Stuffed Catfish",
+    "item-stuffedfish-bluegill": "Grass Stuffed Bluegill",
+    "item-stuffedfish-mutant": "Grass Stuffed Mutated Fish"
+}

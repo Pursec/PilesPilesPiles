@@ -1,0 +1,15 @@
+[
+  {
+    "file": "game:itemtypes/resource/crushed/salt",
+    "op": "add",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "BehaviorPileItem",
+        "properties": {
+          "pileBlockCode": "gespiles:saltPile"
+        }
+      }
+    ]
+  }
+]
