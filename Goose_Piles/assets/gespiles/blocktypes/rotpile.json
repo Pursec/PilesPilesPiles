@@ -11,6 +11,7 @@
 	],
 	"attributes": {
 		"addItemLabel": "Add Rot",
+		"removeItemLabel": "Remove Rot",
 		"interactSoundPath": "gespiles:sounds/effects/squish1mono"
 	},
 	"blockmaterial": "Soil",

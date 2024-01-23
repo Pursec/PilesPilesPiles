@@ -16,8 +16,8 @@
     { "name": "UnstableFalling" }
   ],
   "attributes": {
-    "addItemLabel": "Add Rot",
-    "interactSoundPath": "gespiles:sounds/effects/squish1mono"
+    "addItemLabel": "Add Grain",
+    "removeItemLabel": "Remove Grain"
   },
   "blockmaterial": "Soil",
   "lightAbsorption": 0,
