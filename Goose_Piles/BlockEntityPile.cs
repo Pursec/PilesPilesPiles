@@ -52,59 +52,6 @@ namespace Goose_Vintage_BlockPiles
             base.Initialize(api);
 
             capi = api as ICoreClientAPI;
-            //updateFlies();
         }
-        /*
-        void updateFlies()
-        {
-            if (Api.World.Side == EnumAppSide.Client)
-            {
-                if (ambientSound == null || !ambientSound.IsPlaying)
-                {
-                    ambientSound = ((IClientWorldAccessor)Api.World).LoadSound(new SoundParams()
-                    {
-                        Location = new AssetLocation("gespiles","sounds/effects/flies"),
-                        ShouldLoop = true,
-                        Position = Pos.ToVec3f().Add(0.5f, 0.25f, 0.5f),
-                        DisposeOnFinish = false,
-                        Volume = 0.6f,
-                        Range = 12,
-                        SoundType = EnumSoundType.Ambient
-                    });
-                    if(ambientSound != null)
-                    {
-                        ambientSound.PlaybackPosition = ambientSound.SoundLengthSeconds * (float)Api.World.Rand.NextDouble();
-                        ambientSound.Start();
-                    }
-                }
-            }
-            else
-            {
-                ambientSound?.Stop();
-                ambientSound?.Dispose();
-                ambientSound = null;
-            }
-        }
-        public override void OnBlockRemoved()
-        {
-            base.OnBlockRemoved();
-
-            ambientSound?.Dispose();
-        }
-
-        public override void OnBlockBroken(IPlayer byPlayer = null)
-        {
-            base.OnBlockBroken(byPlayer);
-
-            ambientSound?.Dispose();
-        }
-
-        public override void OnBlockUnloaded()
-        {
-            base.OnBlockUnloaded();
-
-            ambientSound?.Dispose();
-        }
-        */
 	}
 }
