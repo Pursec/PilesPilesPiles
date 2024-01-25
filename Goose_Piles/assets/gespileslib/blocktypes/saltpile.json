@@ -18,7 +18,7 @@
 	"sidesolid": { "all": false },
 	"sideopaque": { "all": false },
 	"textures": {
-		"all": { "base": "gespiles:block/salt" }
+		"all": { "base": "gespilesLib:block/salt" }
 	},
 	"replaceable": 100,
 	"resistance": 2,

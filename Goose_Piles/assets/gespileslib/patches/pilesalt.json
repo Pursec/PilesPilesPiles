@@ -7,7 +7,7 @@
       {
         "name": "BehaviorPileItem",
         "properties": {
-          "pileBlockCode": "gespiles:saltPile"
+          "pileBlockCode": "gespileslib:saltPile"
         }
       }
     ]

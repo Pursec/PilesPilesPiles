@@ -1,6 +1,6 @@
 {
   "type": "code",
-  "modid": "gespiles",
+  "modid": "gespileslib",
   "name": "Piles!",
   "description" : "A proper pile library!",
   "authors": ["Goose"],

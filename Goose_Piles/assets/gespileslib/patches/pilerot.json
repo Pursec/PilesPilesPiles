@@ -1,13 +1,13 @@
 [
   {
-    "file": "game:itemtypes/food/grain",
+    "file": "game:itemtypes/resource/rot",
     "op": "add",
     "path": "/behaviors",
     "value": [
       {
         "name": "BehaviorPileItem",
         "properties": {
-          "pileBlockCode": "gespiles:grainPile-{type}"
+          "pileBlockCode": "gespileslib:rotPile"
         }
       }
     ]

@@ -8,14 +8,14 @@ namespace Goose_Vintage_BlockPiles
         {
             get
             {
-                return Attributes?["addItemLabel"].AsString("gespiles:blockhelp-genericpile-addItem") ?? "gespiles:blockhelp-genericpile-addItem";
+                return Attributes?["addItemLabel"].AsString("gespileslib:blockhelp-genericpile-addItem") ?? "gespileslib:blockhelp-genericpile-addItem";
             }
         }
         public override string RemoveItemLabel
         {
             get
             {
-                return Attributes?["removeItemLabel"].AsString("gespiles:blockhelp-genericpile-removeItem") ?? "gespiles:blockhelp-genericpile-removeItem";
+                return Attributes?["removeItemLabel"].AsString("gespileslib:blockhelp-genericpile-removeItem") ?? "gespileslib:blockhelp-genericpile-removeItem";
             }
         }
         public override int DefaultAddQuantity

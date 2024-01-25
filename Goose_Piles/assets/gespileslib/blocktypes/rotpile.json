@@ -12,14 +12,14 @@
 	"attributes": {
 		"addItemLabel": "Add Rot",
 		"removeItemLabel": "Remove Rot",
-		"interactSoundPath": "gespiles:sounds/effects/squish1mono"
+		"interactSoundPath": "gespilesLib:sounds/effects/squish1mono"
 	},
 	"blockmaterial": "Soil",
 	"lightAbsorption": 0,
 	"sidesolid": { "all": false },
 	"sideopaque": { "all": false },
 	"textures": {
-		"all": { "base": "gespiles:block/rot" }
+		"all": { "base": "gespileslib:block/rot" }
 	},
 	"replaceable": 100,
 	"resistance": 2,
