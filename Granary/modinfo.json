@@ -1,0 +1,13 @@
+{
+  "type": "content",
+  "modid": "gespilesgran",
+  "name": "Granary",
+  "description" : "Pile additions for grain and flour",
+  "authors": ["Goose"],
+  "version": "1.0.0",
+  "dependencies": { 
+	"game": "1.19.1",
+	"survival": "",
+	"gespileslib": "1.1.0"
+  }
+}

@@ -1,0 +1,15 @@
+[
+  {
+    "file": "game:itemtypes/resource/rot",
+    "op": "add",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "BehaviorPileItem",
+        "properties": {
+          "pileBlockCode": "gespilesgran:rotPile"
+        }
+      }
+    ]
+  }
+]

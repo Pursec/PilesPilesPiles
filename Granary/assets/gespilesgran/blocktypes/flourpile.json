@@ -1,0 +1,48 @@
+{
+  "code": "flourPile",
+  "class": "BlockPile",
+  "entityClass": "BlockEntityPile",
+  "variantgroups": [
+    {
+      "code": "type",
+      "states": ["spelt", "rice", "flax", "rye", "cassava", "amaranth", "sunflower" ]
+    }
+  ],
+  "creativeinventory": {
+    "general": [ "" ],
+    "decorative": [ "" ]
+  },
+  "behaviors": [
+    { "name": "UnstableFalling" }
+  ],
+  "attributes": {
+    "addItemLabel": "Add Flour",
+    "removeItemLabel": "Remove Flour",
+	"interactSoundPath": "game:sounds/block/snow"
+  },
+  "blockmaterial": "Soil",
+  "lightAbsorption": 0,
+  "sidesolid": { "all": false },
+  "sideopaque": { "all": false },
+  "textures": {
+    "all": { "base": "gespilesgran:blocks/{type}-flour" }
+  },
+  "replaceable": 100,
+  "resistance": 2,
+  "collisionbox": {
+    "x1": 0,
+    "y1": 0,
+    "x2": 1,
+    "y2": 0,
+    "z2": 1
+  },
+  "selectionbox": {
+    "x1": 0,
+    "y1": 0,
+    "x2": 1,
+    "y2": 0,
+    "z2": 1
+  },
+  "drops": [],
+  "materialDensity": 600
+}
