@@ -27,13 +27,13 @@ namespace Goose_Vintage_BlockPiles
             ICoreAPI API = byEntity.Api;
             if (!IsPileable)
             {
-                collObj.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling);
+                //collObj.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling);
                 return;
             }
 
             if (blockSel == null || byEntity?.World == null || !byEntity.Controls.ShiftKey)
             {
-                collObj.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling);
+                //collObj.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling);
                 return;
             }
 
@@ -107,7 +107,8 @@ namespace Goose_Vintage_BlockPiles
             }
             else
             {
-                collObj.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling);
+                return;
+                //collObj.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handHandling);
             }
 
 
