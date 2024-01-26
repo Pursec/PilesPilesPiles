@@ -1,0 +1,15 @@
+[
+  {
+    "file": "game:itemtypes/food/flour",
+    "op": "add",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "BehaviorPileItem",
+        "properties": {
+          "pileBlockCode": "gespilesgran:flourPile-{type}"
+        }
+      }
+    ]
+  }
+]
