@@ -28,8 +28,6 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
-  <None Remove="assets\gespileslib\blocktypes\grainPile.json" />
-  <None Remove="assets\gespileslib\patches\pileGrain.json" />
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
