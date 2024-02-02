@@ -17,6 +17,8 @@ namespace Goose_Vintage_BlockPiles
         public abstract string AddItemLabel { get; }
 		public abstract string RemoveItemLabel { get; }
 		public abstract int DefaultAddQuantity { get; }
+        public abstract string BulkAddLabel { get; }
+        public abstract string BulkRemoveLabel { get; }
         private Cuboidf[][] CollisionBoxesbyFillLevel;
         public BlockPileAbstract()
         {
@@ -33,30 +35,56 @@ namespace Goose_Vintage_BlockPiles
             EnumAppSide side = api.Side;
             base.OnLoaded(api);
         }
+
         public override WorldInteraction[] GetPlacedBlockInteractionHelp(IWorldAccessor world, BlockSelection selection, IPlayer forPlayer)
 		{
 			BlockEntityPileAbstract blockEntityPile = world.BlockAccessor.GetBlockEntity(selection.Position) as BlockEntityPileAbstract;
 			if (blockEntityPile != null && blockEntityPile.inventory[0].Itemstack != null)
 			{
-				return new WorldInteraction[]
-				{
-					new WorldInteraction
-					{
-						ActionLangCode = this.AddItemLabel,
-						MouseButton = EnumMouseButton.Right,
-						HotKeyCode = "sneak",
-						Itemstacks = new ItemStack[]
-						{
-							new ItemStack(blockEntityPile.inventory[0].Itemstack.Item, this.DefaultAddQuantity)
-						}
-					},
-					new WorldInteraction
-					{
-						ActionLangCode = this.RemoveItemLabel,
-						MouseButton = EnumMouseButton.Right,
-						HotKeyCode = null
-					}
-				};
+                return new WorldInteraction[]
+                {
+                    new WorldInteraction
+                    {
+                        ActionLangCode = this.AddItemLabel,
+                        MouseButton = EnumMouseButton.Right,
+                        HotKeyCode = "sneak",
+                        Itemstacks = new ItemStack[]
+                        {
+                            new ItemStack(blockEntityPile.inventory[0].Itemstack.Item, this.DefaultAddQuantity)
+                        }
+                    },
+                    new WorldInteraction
+                    {
+                        ActionLangCode = this.RemoveItemLabel,
+                        MouseButton = EnumMouseButton.Right,
+                        HotKeyCode = null,
+
+                        Itemstacks = new ItemStack[]
+                        {
+                            new ItemStack(blockEntityPile.inventory[0].Itemstack.Item, this.GetBlockEntity<BlockEntityPile>(selection).DefaultTakeQuantity)
+                        }
+                    },
+                    new WorldInteraction
+                    {
+                        ActionLangCode = this.BulkAddLabel,
+                        MouseButton = EnumMouseButton.Right,
+                        HotKeyCodes = new string[] { "shift", "ctrl" },
+                        Itemstacks = new ItemStack[]
+                        {
+                            new ItemStack(blockEntityPile.inventory[0].Itemstack.Item, this.GetBlockEntity<BlockEntityPile>(selection).BulkTakeQuantity)
+                        }
+                    },
+                    new WorldInteraction
+                    {
+                        ActionLangCode = this.BulkRemoveLabel,
+                        MouseButton = EnumMouseButton.Right,
+                        HotKeyCode = "crtl",
+                        Itemstacks = new ItemStack[]
+                        {
+                            new ItemStack(blockEntityPile.inventory[0].Itemstack.Item, this.GetBlockEntity<BlockEntityPile>(selection).BulkTakeQuantity)
+                        }
+                    }
+                };
 			}
 			return new WorldInteraction[0];
 		}
@@ -75,14 +103,16 @@ namespace Goose_Vintage_BlockPiles
 
         public bool Construct(ItemSlot slot, IWorldAccessor world, BlockPos pos, IPlayer byPlayer)
         {
-            if(!world.BlockAccessor.GetBlock(pos).IsReplacableBy(this))
+            if (!world.BlockAccessor.GetBlock(pos).IsReplacableBy(this))
             {
                 return false;
             }
-            if(!world.BlockAccessor.GetBlock(pos.DownCopy(1)).CanAttachBlockAt(world.BlockAccessor, this, pos.DownCopy(1), BlockFacing.UP, null))
+            
+            if ((this.Attributes?["allowUnstablePlacement"]?.AsBool() ?? false) != true && !world.BlockAccessor.GetBlock(pos.DownCopy(1)).CanAttachBlockAt(world.BlockAccessor, this, pos.DownCopy(1), BlockFacing.UP, null))
             {
                 return false;
             }
+            
             world.BlockAccessor.SetBlock(this.BlockId, pos);
             BlockEntity be = world.BlockAccessor.GetBlockEntity(pos);
             if (be is BlockEntityPileAbstract)
@@ -101,6 +131,21 @@ namespace Goose_Vintage_BlockPiles
                 bep.MarkDirty();
                 world.BlockAccessor.MarkBlockDirty(pos);
                 world.PlaySoundAt(bep.SoundLocation, pos.X, pos.Y, pos.Z, byPlayer, true);
+                Block belowBlock = world.BlockAccessor.GetBlock(pos.DownCopy(1));
+                BlockEntityPile belowBlockEntity = world.BlockAccessor.GetBlockEntity(pos.DownCopy(1)) as BlockEntityPile;
+                if (this.GetBehavior(typeof(BlockBehaviorUnstableFalling), true) != null && (belowBlock.Replaceable >= 6000 || belowBlockEntity?.OwnStackSize < belowBlockEntity?.MaxStackSize))
+                {
+                    Entity entity = world.GetNearestEntity(pos.ToVec3d().Add(0.5, 0.5, 0.5), 1, 1.5f, (e) =>
+                    {
+                        return e is EntityBlockFalling ebf && ebf.initialPos.Equals(pos);
+                    });
+
+                    if (entity == null)
+                    {
+                        EntityBlockFalling entityblock = new EntityBlockFalling(world.BlockAccessor.GetBlock(pos), world.BlockAccessor.GetBlockEntity(pos), pos, null, 1, true, 0.05f);
+                        world.SpawnEntity(entityblock);
+                    }
+                }
                 //api.Logger.Debug("Created {0} stacksize {1}pile of {2} Layers", bep.inventory[0].StackSize,bep.inventory[0].GetStackName(), bep.Layers);
             }
             return true;
@@ -160,7 +205,10 @@ namespace Goose_Vintage_BlockPiles
                 if (bep != null)
                 {
                     //api.Logger.Debug("Pile size {0} fell onto/this is my size before", bep.OwnStackSize);
-                    return bep.MergeWith(blockEntityAttributes);
+                    if (bep.MergeWith(blockEntityAttributes))
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -177,16 +225,17 @@ namespace Goose_Vintage_BlockPiles
 
             return false;
         }
-        public override void OnNeighbourBlockChange(IWorldAccessor world, BlockPos pos, BlockPos neibpos)
-		{
-			if (!world.BlockAccessor.GetBlock(pos.DownCopy(1)).CanAttachBlockAt(world.BlockAccessor, this, pos.DownCopy(1), BlockFacing.UP, null))
-            {
-                //var thisBlock = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityPile;
-                //var downBlock = world.BlockAccessor.GetBlockEntity(pos.DownCopy()) as BlockEntityPile;
-                //api.Logger.Debug("Breaking block size: {0}, downBlocks size: {1}", thisBlock.OwnStackSize, downBlock.OwnStackSize);
-				world.BlockAccessor.BreakBlock(pos, null, 1f);
-			}
-		}
+        // public override void OnNeighbourBlockChange(IWorldAccessor world, BlockPos pos, BlockPos neibpos)
+        //{
+
+        //if (!world.BlockAccessor.GetBlock(pos.DownCopy(1)).CanAttachBlockAt(world.BlockAccessor, this, pos.DownCopy(1), BlockFacing.UP, null))
+        // {
+        //var thisBlock = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityPile;
+        //var downBlock = world.BlockAccessor.GetBlockEntity(pos.DownCopy()) as BlockEntityPile;
+        //api.Logger.Debug("Breaking block size: {0}, downBlocks size: {1}", thisBlock.OwnStackSize, downBlock.OwnStackSize);
+        //world.BlockAccessor.BreakBlock(pos, null, 1f);
+        //}
+        //}
         public override bool CanAttachBlockAt(IBlockAccessor blockAccessor, Block block, BlockPos pos, BlockFacing blockFace, Cuboidi attachmentArea = null)
 		{
 			BlockEntityPileAbstract bep = blockAccessor.GetBlockEntity(pos) as BlockEntityPileAbstract;

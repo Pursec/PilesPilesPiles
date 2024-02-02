@@ -9,6 +9,7 @@ namespace Goose_Vintage_BlockPiles
     public abstract class BehaviorPileableAbstract : CollectibleBehavior
     {
         protected abstract AssetLocation PileBlockCode { get; }
+        //protected abstract EnumModifierKey creationAndAddModifierKey { get; }
         public virtual bool IsPileable => true;
 
 

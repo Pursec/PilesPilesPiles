@@ -12,7 +12,8 @@
 	"attributes": {
 		"addItemLabel": "Add Rot",
 		"removeItemLabel": "Remove Rot",
-		"interactSoundPath": "gespilesgran:sounds/effects/squish1mono"
+		"interactSoundPath": "gespilesgran:sounds/effects/squish1mono",
+		"allowUnstablePlacement": true
 	},
 	"blockmaterial": "Soil",
 	"lightAbsorption": 0,

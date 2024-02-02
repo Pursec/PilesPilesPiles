@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -100,12 +101,47 @@ namespace Goose_Vintage_BlockPiles
         }
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
         {
+            int size;
+            if (mesher is EntityBlockFallingRenderer)
+            {
+                //Api.Logger.Debug("Tesselating stacksize: " + inventory[0]?.StackSize + " Falling: " + (mesher is EntityBlockFallingRenderer) + " Empty?: " + inventory[0]?.Empty.ToString());
+                if (inventory[0].Empty) 
+                {
+                    InventoryGeneric otherinv2 = new InventoryGeneric(1, BlockCode, null, null, null);
+                    EntityBlockFalling entityblock = Api.World.GetNearestEntity(Pos.ToVec3d().Add(0.5, 0.5, 0.5), 1, 1.5f) as EntityBlockFalling;
+
+                    //otherinv2.FromTreeAttributes(entityblock.blockEntityAttributes.GetAttribute("inventory") as TreeAttribute);
+                    //otherinv2.Api = Api;
+                    //otherinv2.ResolveBlocksOrItems();
+                    this.inventory.FromTreeAttributes(entityblock.blockEntityAttributes.GetAttribute("inventory") as TreeAttribute);
+                    this.inventory.ResolveBlocksOrItems();
+                    //Api.Logger.Debug("Inv: " + inventory[0].Itemstack.ToString());
+                }
+
+                //Api.Logger.Debug("Tesselation | Falling entity inv: " + otherinv2[0].Itemstack.ToString());
+                //Api.Logger.Debug("Hello?");
+                //Api.Logger.Debug("StackSize: " + otherinv2[0].Itemstack?.StackSize.ToString());
+
+                //size = (otherinv2[0].StackSize == 1 ? 1 : otherinv2[0].StackSize / 2) * 2;
+                size = this.Layers * 2;
+                //Api.Logger.Debug("Size: " + size.ToString());
+                
+                Shape shape = capi.TesselatorManager.GetCachedShape(new AssetLocation("block/basic/layers/" + GameMath.Clamp(size, 2, 16) + "voxel"));
+                MeshData meshdata;
+                this.capi.Tesselator.TesselateShape(this.BlockCode, shape, out meshdata, this);
+
+                mesher.AddMeshData(meshdata);
+                return true;
+            }
+
+
             lock (inventoryLock)
             {
                 if (!inventory[0].Empty)
                 {
-                    int size = this.Layers * 2;
-                    if (mesher is EntityBlockFallingRenderer) size = 2; // Haxy solution >.>
+                    //Api.Logger.Debug("Tesselating stacksize: " + inventory[0].StackSize + " Falling: " + (mesher is EntityBlockFallingRenderer));
+                    size = this.Layers * 2;
+                    //if (mesher is EntityBlockFallingRenderer) size = 2; // Haxy solution >.>
 
                     Shape shape = capi.TesselatorManager.GetCachedShape(new AssetLocation("block/basic/layers/" + GameMath.Clamp(size, 2, 16) + "voxel"));
                     MeshData meshdata;
@@ -128,21 +164,28 @@ namespace Goose_Vintage_BlockPiles
             {
                 triggerTopMostPile(this);
             }
+            //TriggerPileChanged();
             //Api.Logger.Debug("Pilesize after Trigger | {0}", inventory[0].StackSize);
             return ok;
         }
 
         public bool triggerTopMostPile(BlockEntityPileAbstract pile)
         {
+            if (Api.World.BlockAccessor.GetBlockEntity(pile.Pos.UpCopy()) is BlockEntityPileAbstract uppile) return false;
+            TriggerPileChanged();
+            return true;
+            /*
             if (Api.World.BlockAccessor.GetBlockEntity(pile.Pos.UpCopy()) is BlockEntityPileAbstract uppile)
             {
                 return triggerTopMostPile(uppile);
             }
             else
             {
+                Api.Logger.Debug("Triggering the topmost pile");
                 pile.TriggerPileChanged();
                 return true;
             }
+            */
         }
         void TriggerPileChanged()
         {
@@ -152,33 +195,35 @@ namespace Goose_Vintage_BlockPiles
 
             BlockPileAbstract belowpile = Api.World.BlockAccessor.GetBlock(Pos.DownCopy()) as BlockPileAbstract;
             int belowwlayers = belowpile == null ? 0 : belowpile.GetLayercount(Api.World, Pos.DownCopy());
-
+            //int test = 0;
             foreach (var face in BlockFacing.HORIZONTALS)
             {
                 BlockPos npos = Pos.AddCopy(face);
                 Block nblock = Api.World.BlockAccessor.GetBlock(npos);
                 BlockPileAbstract nblockpile = Api.World.BlockAccessor.GetBlock(npos) as BlockPileAbstract;
-                
+
                 // When should it collapse?
                 int neighbourLayers = nblockpile?.GetLayercount(Api.World, npos) ?? 0;
 
                 // 1. When our own layer count exceeds maxSteepness
-                int nearbyCollapsibleCount = nblock.Replaceable > 6000 ? Layers - maxSteepness : 0; 
+                int nearbyCollapsibleCount = nblock.Replaceable > 6000 ? Layers - maxSteepness : 0;
 
                 // 2. Nearby coal pile is maxsteepness smaller
-                int nearbyToPileCollapsibleCount = nblockpile != null ? (Layers - neighbourLayers) - maxSteepness : 0; 
+                int nearbyToPileCollapsibleCount = nblockpile != null ? (Layers - neighbourLayers) - maxSteepness : 0;
 
                 // 3. We are a 2 tall pile that is collapsible onto another pile
                 BlockPileAbstract nbelowblockpile = Api.World.BlockAccessor.GetBlock(npos.DownCopy()) as BlockPileAbstract;
-                int nbelowwlayers = nbelowblockpile == null ? 0 : nbelowblockpile.GetLayercount(Api.World, npos.DownCopy()); 
-                int selfTallPileCollapsibleCount = belowpile != null && nbelowblockpile != null ? (Layers + belowwlayers - nbelowwlayers - maxSteepness) : 0; 
+                int nbelowwlayers = nbelowblockpile == null ? 0 : nbelowblockpile.GetLayercount(Api.World, npos.DownCopy());
+                int selfTallPileCollapsibleCount = belowpile != null && nbelowblockpile != null ? (Layers + belowwlayers - nbelowwlayers - maxSteepness) : 0;
 
                 int collapsibleLayerCount = GameMath.Max(nearbyCollapsibleCount, nearbyToPileCollapsibleCount, selfTallPileCollapsibleCount);
 
                 if (Api.World.Rand.NextDouble() < collapsibleLayerCount / (float)maxSteepness)
                 {
-                    int quantity = inventory[0].StackSize > 2 ? Api.World.Rand.Next(1, 3) : 1;
+                    int quantity = Math.Clamp(Api.World.Rand.Next(1, (MaxStackSize / 8) + 1), 1, inventory[0].StackSize);
                     //Api.Logger.Debug("Pile with {0} stackSize collapsing | quantity: {1}", inventory[0].StackSize, quantity);
+                    //test += 1;
+                    //Api.Logger.Debug("Test num: " + test);
                     if (TryPartialCollapse(npos.UpCopy(), quantity))
                     {
                         //Api.Logger.Debug("Sanity Check after collapse, pile size: {0}", inventory[0].StackSize);
@@ -193,14 +238,15 @@ namespace Goose_Vintage_BlockPiles
             if (inventory[0].Empty) return false;
 
             IWorldAccessor world = Api.World;
+            //Api.Logger.Debug("BlockEntity at pos:" + world.BlockAccessor.GetBlockEntity(pos) + " Block: " + world.BlockAccessor.GetBlock(pos) + " Replaceable: " + world.BlockAccessor.GetBlock(pos).Replaceable);
 
             if (world.Side == EnumAppSide.Server)
             {
                 ICoreServerAPI sapi = (world as IServerWorldAccessor).Api as ICoreServerAPI;
                 if (!sapi.Server.Config.AllowFallingBlocks) return false;
             }
-
-            if (IsReplacableBeneath(world, pos) || IsReplacableBeneathAndSideways(world, pos))
+            //Api.Logger.Debug(String.Format("Blocktype: {0} | Replaceable: {1} | {1} >= 6000 : {2}", world.BlockAccessor.GetBlock(pos), world.BlockAccessor.GetBlock(pos).Replaceable, world.BlockAccessor.GetBlock(pos).Replaceable >= 6000));
+            if (world.BlockAccessor.GetBlock(pos).Replaceable >= 6000 && (IsReplacableBeneath(world, pos) || IsReplacableBeneathAndSideways(world, pos)))
             {
                 // Prevents duplication
                 Entity entity = world.GetNearestEntity(pos.ToVec3d().Add(0.5, 0.5, 0.5), 1, 1.5f, (e) =>
@@ -210,16 +256,55 @@ namespace Goose_Vintage_BlockPiles
 
                 if (entity == null)
                 {
-                    int prevstacksize = inventory[0].StackSize; 
+                    lock (inventoryLock) {
+                        int prevstacksize = inventory[0].StackSize;
 
-                    inventory[0].Itemstack.StackSize = quantity; 
-                    EntityBlockFalling entityblock = new EntityBlockFalling(Block, this, pos, null, 1, true, 0.05f);
-                    entityblock.DoRemoveBlock = false; // We want to split the pile, not remove it 
-                    world.SpawnEntity(entityblock);
-                    entityblock.ServerPos.Y -= 0.25f;
-                    entityblock.Pos.Y -= 0.25f;
-                    inventory[0].Itemstack.StackSize = prevstacksize - quantity;
-                    //if (inventory[0].Empty) Api.World.BlockAccessor.SetBlock(0, Pos);
+                        //Api.Logger.Debug("Prev stack size: " + inventory[0].StackSize);
+
+                        //inventory[0].Itemstack.StackSize = quantity;
+
+                        //Api.Logger.Debug("Quanity: " + quantity);
+
+                        TreeAttribute blockEntityAttributes = new TreeAttribute();
+                        this.ToTreeAttributes(blockEntityAttributes);
+                        InventoryGeneric otherinv = new InventoryGeneric(1, BlockCode, null, null, null);
+
+                        otherinv.FromTreeAttributes(blockEntityAttributes.GetTreeAttribute("inventory"));
+                        otherinv.Api = Api;
+                        otherinv.ResolveBlocksOrItems();
+                        otherinv[0].Itemstack.StackSize = quantity;
+
+                        ((IBlockItemPile)world.GetBlock(Block.BlockId)).Construct(otherinv[0], world, pos, null);
+                        world.BlockAccessor.MarkBlockDirty(pos);
+
+                        //Api.Logger.Debug("What block did I just make?: " + world.BlockAccessor.GetBlock(pos).ToString());
+
+                        EntityBlockFalling entityblock = new EntityBlockFalling(world.BlockAccessor.GetBlock(pos), world.BlockAccessor.GetBlockEntity(pos), pos, null, 1, true, 0.05f);
+                        entityblock.DoRemoveBlock = true; // We want to split the pile, not remove it 
+                        
+                        world.SpawnEntity(entityblock);
+
+                        //Api.Logger.Debug("Falling blocktype: " + entityblock.Block);
+
+                        InventoryGeneric otherinv2 = new InventoryGeneric(1, BlockCode, null, null, null);
+                        
+                        otherinv2.FromTreeAttributes(entityblock.blockEntityAttributes.GetAttribute("inventory") as TreeAttribute);
+                        otherinv2.Api = Api;
+                        otherinv2.ResolveBlocksOrItems();
+                        
+                        //Api.Logger.Debug("Falling attribute tree:" + string.Join("\n", entityblock.blockEntityAttributes.Keys));
+                        //Api.Logger.Debug("Falling Inventory: " + otherinv2[0].Itemstack.ToString());
+                        
+
+                        inventory[0].Itemstack.StackSize = prevstacksize - quantity;
+
+                        Api.Logger.Debug("New Stack size: " + inventory[0].StackSize);
+
+                        if (inventory[0].StackSize < 1)
+                        {
+                            Api.World.BlockAccessor.SetBlock(0, Pos);
+                        }
+                    }
                     //Api.Logger.Debug("Collapsed pile now size: {0}", inventory[0].StackSize);
                     return true;
                 }
@@ -273,9 +358,13 @@ namespace Goose_Vintage_BlockPiles
                     }
                 }
                 MarkDirty(true);
-                TriggerPileChanged();
+                triggerTopMostPile(this);
             }
-
+            else
+            {
+                Api.World.SpawnItemEntity(otherinv[0].Itemstack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
+            }
+            Api.World.BlockAccessor.TriggerNeighbourBlockUpdate(this.Pos);
             return true;
         }
     }

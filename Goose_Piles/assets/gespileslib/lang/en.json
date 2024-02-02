@@ -5,6 +5,8 @@
     "blockhelp-saltpile-addsalt": "Add Salt",
     "blockhelp-genericpile-addItem": "Add Item",
     "blockhelp-genericpile-removeItem": "Remove Item",
+    "blockhelp-genericpile-bulkAdd": "Bulk Add",
+    "blockhelp-genericpile-bulkRemove": "Bulk Remove",
     "item-roughslug-*": "Rough Cast Metal Slug",
     "block-slugmold-raw": "Raw cast slug mold",
     "block-slugmold-burned": "Cast slug mold",

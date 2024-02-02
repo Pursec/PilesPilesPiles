@@ -50,7 +50,6 @@ namespace Goose_Vintage_BlockPiles
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
-
             capi = api as ICoreClientAPI;
         }
 	}
