@@ -4,10 +4,10 @@
   "name": "Granary",
   "description" : "Pile additions for grain and flour",
   "authors": ["Goose"],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "dependencies": { 
 	"game": "1.19.1",
 	"survival": "",
-	"gespileslib": "1.1.0"
+	"gespileslib": "1.2.0"
   }
 }
