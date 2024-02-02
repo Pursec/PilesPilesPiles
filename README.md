@@ -12,14 +12,16 @@ The process of implementing a new pile is as follows:
 
 - These values are as follows:
 
-      "attributes":{
+      "attributes":
+      {
          "addItemLabel" : "String" or "LangKey",
          "removeItemLabel": "String" or "LangKey",
-         "defaultAddQuantity": Integer,
-         "defaultTakeQuantity": Integer,
-         "bulkTakeQuantity": Integer,
-         "maxStackSize": Integer,
-         "interactSoundPath" : "domain:pathToSound"
+         "defaultAddQuantity": Integer (default: 2),
+         "defaultTakeQuantity": Integer (default: 2),
+         "bulkTakeQuantity": Integer (default: 4),
+         "maxStackSize": Integer (default: 16),
+         "interactSoundPath" : "domain:pathToSound",
+         "allowUnstablePlacement": true/false (default: false)
       }
 
  3. Create a patch to add BehaviorPileITem to the behaviors array (or create one if not present) of desired pileable item
