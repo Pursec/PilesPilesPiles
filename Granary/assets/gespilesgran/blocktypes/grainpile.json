@@ -18,7 +18,8 @@
   "attributes": {
     "addItemLabel": "Add Grain",
     "removeItemLabel": "Remove Grain",
-	"interactSoundPath": "game:sounds/block/plant"
+    "interactSoundPath": "game:sounds/block/plant",
+    "allowUnstablePlacement": true
   },
   "blockmaterial": "Soil",
   "lightAbsorption": 0,

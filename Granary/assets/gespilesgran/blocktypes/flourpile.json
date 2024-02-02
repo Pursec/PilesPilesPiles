@@ -18,7 +18,8 @@
   "attributes": {
     "addItemLabel": "Add Flour",
     "removeItemLabel": "Remove Flour",
-	"interactSoundPath": "game:sounds/block/snow"
+    "interactSoundPath": "game:sounds/block/snow",
+    "allowUnstablePlacement": true
   },
   "blockmaterial": "Soil",
   "lightAbsorption": 0,

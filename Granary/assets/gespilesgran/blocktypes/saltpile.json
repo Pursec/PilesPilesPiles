@@ -11,7 +11,8 @@
 	],
 	"attributes": {
 		"addItemLabel": "Add Salt",
-		"removeItemLabel": "Remove Salt"
+		"removeItemLabel": "Remove Salt",
+		"allowUnstablePlacement": true
 	},
 	"blockmaterial": "Soil",
 	"lightAbsorption": 0,
